@@ -26,3 +26,7 @@ export const sendToken = (res, user, code, message) => {
     message,
   });
 };
+
+export const emitEvent = (req, event, users, data) => {
+  console.log("Emitting event", event);
+};
