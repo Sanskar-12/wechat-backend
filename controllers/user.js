@@ -1,6 +1,6 @@
 import { TryCatch } from "../middlewares/error.js";
 import { User } from "../models/user.js";
-import { sendToken } from "../utils/features.js";
+import { cookieOptions, sendToken } from "../utils/features.js";
 import bcrypt from "bcrypt";
 import ErrorHandler from "../utils/utility.js";
 
@@ -41,4 +41,28 @@ export const login = TryCatch(async (req, res, next) => {
   }
 
   sendToken(res, user, 200, `Welcome back, ${user.username}`);
+});
+
+//User Profile Api
+export const profile = TryCatch(async (req, res, next) => {
+  const user = await User.findById(req.user);
+
+  return res.status(200).json({
+    success: true,
+    user,
+  });
+});
+
+//Logout Api
+export const logout = TryCatch(async (req, res, next) => {
+  return res
+    .status(200)
+    .cookie("wechat-token", "", {
+      ...cookieOptions,
+      maxAge: 0,
+    })
+    .json({
+      success: true,
+      message: "Logged Out Successfully",
+    });
 });
