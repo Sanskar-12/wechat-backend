@@ -284,3 +284,5 @@ export const sendAttachments = TryCatch(async (req, res, next) => {
     message,
   });
 });
+
+console.log("sdfdsf");
