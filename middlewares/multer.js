@@ -6,4 +6,8 @@ const multerUpload = multer({
   },
 });
 
-export const singleUpload = multerUpload.single("avatar");
+const singleUpload = multerUpload.single("avatar");
+
+const attachmentsMulter = multerUpload.array("files", 5);
+
+export { singleUpload, attachmentsMulter };
