@@ -30,3 +30,7 @@ export const sendToken = (res, user, code, message) => {
 export const emitEvent = (req, event, users, data) => {
   console.log("Emitting event", event);
 };
+
+export const deleteFromCloudinary = (public_ids) => {
+  //Delete From Cloudinary
+};
