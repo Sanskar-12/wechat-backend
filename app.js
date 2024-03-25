@@ -12,6 +12,7 @@ config({
 });
 
 const port = process.env.PORT || 4000;
+export const mode = process.env.NODE_ENV.trim() || "PRODUCTION";
 
 connectDB();
 
@@ -32,5 +33,5 @@ app.get("/", (req, res) => {
 app.use(errorMiddleware);
 
 app.listen(port, () => {
-  console.log(`Server is Listening on port ${port}`);
+  console.log(`Server is Listening on port ${port} on ${mode} Mode`);
 });

@@ -9,8 +9,16 @@ import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
 import { otherMember } from "../lib/chat.js";
 
 //Register Api
-export const register = TryCatch(async (req, res) => {
+export const register = TryCatch(async (req, res, next) => {
   const { name, username, password, bio } = req.body;
+
+  const file = req.file;
+
+  if (!file) {
+    return next(new ErrorHandler("Please Upload Avatar", 400));
+  }
+
+  console.log(file);
 
   const avatar = {
     public_id: "sdfsdfsd",
