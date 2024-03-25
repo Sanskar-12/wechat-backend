@@ -1,5 +1,6 @@
 import { TryCatch } from "../middlewares/error.js";
 import { User } from "../models/user.js";
+import { Chat } from "../models/chat.js";
 import { cookieOptions, sendToken } from "../utils/features.js";
 import bcrypt from "bcrypt";
 import ErrorHandler from "../utils/utility.js";
@@ -65,4 +66,28 @@ export const logout = TryCatch(async (req, res, next) => {
       success: true,
       message: "Logged Out Successfully",
     });
+});
+
+export const searchUsers = TryCatch(async (req, res, next) => {
+  const { name = "" } = req.query;
+
+  const myChat = await Chat.find({ groupChat: false, members: req.user });
+
+  const allUserFromMyChats = myChat.map((chat) => chat.members).flat();
+
+  const allUsersExceptMeAndMyFriends = await User.find({
+    _id: { $nin: allUserFromMyChats },
+    name: { $regex: name, $options: "i" },
+  });
+
+  const users = allUsersExceptMeAndMyFriends.map(({ _id, name, avatar }) => ({
+    _id,
+    name,
+    avatar: avatar.url,
+  }));
+
+  return res.status(200).json({
+    success: true,
+    users,
+  });
 });
