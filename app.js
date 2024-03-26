@@ -8,8 +8,10 @@ import { errorMiddleware } from "./middlewares/error.js";
 import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { NEW_MESSAGE } from "./constants/events.js";
+import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
+import { getSockets } from "./lib/chat.js";
+import { Message } from "./models/message.js";
 
 config({
   path: "./.env",
@@ -65,7 +67,24 @@ io.on("connection", (socket) => {
       chat: chatId,
     };
 
+    const membersSocket = getSockets(members);
+
+    io.to(membersSocket).emit(NEW_MESSAGE, {
+      chatId,
+      message: messageForRealTime,
+    });
+
+    io.to(members).emit(NEW_MESSAGE_ALERT, {
+      chatId,
+    });
+
     console.log("new message", messageForRealTime);
+
+    try {
+      await Message.create(messageForDB);
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   socket.on("disconnect", () => {
