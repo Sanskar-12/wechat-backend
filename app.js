@@ -12,6 +12,7 @@ import { NEW_MESSAGE, NEW_MESSAGE_ALERT } from "./constants/events.js";
 import { v4 as uuid } from "uuid";
 import { getSockets } from "./lib/chat.js";
 import { Message } from "./models/message.js";
+import cors from "cors";
 
 config({
   path: "./.env",
@@ -30,7 +31,18 @@ export const userSocketIDs = new Map();
 //Using middlewares
 app.use(express.json());
 app.use(cookieParser());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:4173",
+      process.env.CLIENT_URL,
+    ],
+    credentials: true,
+  })
+);
 
+//apis
 app.use("/user", userRoute);
 app.use("/chat", chatRoute);
 app.use("/admin", adminRoute);
