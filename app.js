@@ -13,6 +13,7 @@ import { v4 as uuid } from "uuid";
 import { getSockets } from "./lib/chat.js";
 import { Message } from "./models/message.js";
 import cors from "cors";
+import cloudinary from "cloudinary";
 
 config({
   path: "./.env",
@@ -22,6 +23,12 @@ const port = process.env.PORT || 4000;
 export const mode = process.env.NODE_ENV.trim() || "PRODUCTION";
 
 connectDB();
+
+cloudinary.v2.config = {
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+};
 
 const app = express();
 const server = createServer(app);

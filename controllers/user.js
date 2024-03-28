@@ -2,7 +2,12 @@ import { TryCatch } from "../middlewares/error.js";
 import { User } from "../models/user.js";
 import { Chat } from "../models/chat.js";
 import { Request } from "../models/request.js";
-import { cookieOptions, emitEvent, sendToken } from "../utils/features.js";
+import {
+  cookieOptions,
+  emitEvent,
+  sendToken,
+  uploadToCloudinary,
+} from "../utils/features.js";
 import bcrypt from "bcrypt";
 import ErrorHandler from "../utils/utility.js";
 import { NEW_REQUEST, REFETCH_CHATS } from "../constants/events.js";
@@ -18,11 +23,11 @@ export const register = TryCatch(async (req, res, next) => {
     return next(new ErrorHandler("Please Upload Avatar", 400));
   }
 
-  console.log(file);
+  const result = await uploadToCloudinary([file]);
 
   const avatar = {
-    public_id: "sdfsdfsd",
-    url: "sdfsdfsd",
+    public_id: result[0].public_id,
+    url: result[0].url,
   };
 
   const user = await User.create({
