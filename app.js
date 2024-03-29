@@ -24,11 +24,11 @@ export const mode = process.env.NODE_ENV.trim() || "PRODUCTION";
 
 connectDB();
 
-cloudinary.v2.config = {
+cloudinary.v2.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.API_KEY,
   api_secret: process.env.API_SECRET,
-};
+});
 
 const app = express();
 const server = createServer(app);

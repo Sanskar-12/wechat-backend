@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
 import { v4 as uuid } from "uuid";
+import { getBase64 } from "../lib/chat.js";
 
 export const cookieOptions = {
   maxAge: 15 * 24 * 60 * 60 * 1000,
@@ -37,7 +38,7 @@ export const uploadToCloudinary = async (files = []) => {
   const uploadPromises = files.map((file) => {
     return new Promise((resolve, reject) => {
       cloudinary.v2.uploader.upload(
-        file.path,
+        getBase64(file),
         {
           resource_type: "auto",
           public_id: uuid(),
@@ -60,7 +61,7 @@ export const uploadToCloudinary = async (files = []) => {
 
     return formattedResult;
   } catch (error) {
-    throw new Error("Error uploading file to cloudinary");
+    throw new Error("Error uploading file to cloudinary", error);
   }
 };
 
