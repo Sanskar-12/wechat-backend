@@ -36,7 +36,7 @@ export const newGroupChat = TryCatch(async (req, res, next) => {
 export const myChats = TryCatch(async (req, res, next) => {
   const chats = await Chat.find({ members: req.user }).populate(
     "members",
-    "name username avatar"
+    "name avatar"
   );
 
   const transformedChats = chats.map(({ _id, name, members, groupChat }) => {
@@ -47,7 +47,7 @@ export const myChats = TryCatch(async (req, res, next) => {
       groupChat,
       avatar: groupChat
         ? members.slice(0, 3).map(({ avatar }) => avatar.url)
-        : [otherMember.avatar.url],
+        : [otherMembers.avatar.url],
       name: groupChat ? name : otherMembers.name,
       members: members.reduce((prev, curr) => {
         if (curr._id.toString() !== req.user.toString()) {
