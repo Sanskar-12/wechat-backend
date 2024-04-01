@@ -14,6 +14,7 @@ import { getSockets } from "./lib/chat.js";
 import { Message } from "./models/message.js";
 import cors from "cors";
 import cloudinary from "cloudinary";
+import corsOptions from "./constants/config.js";
 
 config({
   path: "./.env",
@@ -32,22 +33,15 @@ cloudinary.v2.config({
 
 const app = express();
 const server = createServer(app);
-const io = new Server(server, {});
+const io = new Server(server, {
+  cors: corsOptions,
+});
 export const userSocketIDs = new Map();
 
 //Using middlewares
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:4173",
-      process.env.CLIENT_URL,
-    ],
-    credentials: true,
-  })
-);
+app.use(cors(corsOptions));
 
 //apis
 app.use("/user", userRoute);
