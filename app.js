@@ -15,6 +15,7 @@ import { Message } from "./models/message.js";
 import cors from "cors";
 import cloudinary from "cloudinary";
 import corsOptions from "./constants/config.js";
+import { socketAuthenticator } from "./middlewares/auth.js";
 
 config({
   path: "./.env",
@@ -52,11 +53,16 @@ app.get("/", (req, res) => {
   res.send("Server is Ready :)");
 });
 
+io.use((socket, next) => {
+  cookieParser()(
+    socket.request,
+    socket.request.res,
+    async (err) => await socketAuthenticator(err, socket, next)
+  );
+});
+
 io.on("connection", (socket) => {
-  const sender = {
-    _id: "sdfsdfsdf",
-    name: "jsndjfnnsdf",
-  };
+  const sender = socket.user;
 
   userSocketIDs.set(sender._id.toString(), socket.id);
 
@@ -90,8 +96,6 @@ io.on("connection", (socket) => {
     io.to(members).emit(NEW_MESSAGE_ALERT, {
       chatId,
     });
-
-    console.log("new message", messageForRealTime);
 
     try {
       await Message.create(messageForDB);
