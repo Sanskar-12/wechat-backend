@@ -39,6 +39,8 @@ const io = new Server(server, {
 });
 export const userSocketIDs = new Map();
 
+app.set("io", io);
+
 //Using middlewares
 app.use(express.json());
 app.use(cookieParser());

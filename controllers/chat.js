@@ -1,10 +1,14 @@
 import { TryCatch } from "../middlewares/error.js";
 import { Chat } from "../models/chat.js";
 import ErrorHandler from "../utils/utility.js";
-import { deleteFromCloudinary, emitEvent } from "../utils/features.js";
+import {
+  deleteFromCloudinary,
+  emitEvent,
+  uploadToCloudinary,
+} from "../utils/features.js";
 import {
   ALERT,
-  NEW_ATTACHMENTS,
+  NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
   REFETCH_CHATS,
 } from "../constants/events.js";
@@ -243,7 +247,7 @@ export const sendAttachments = TryCatch(async (req, res, next) => {
   }
 
   //Files Upload
-  const attachments = [];
+  const attachments = await uploadToCloudinary(files);
 
   const messageForRealTime = {
     content: "",
@@ -264,7 +268,7 @@ export const sendAttachments = TryCatch(async (req, res, next) => {
 
   const message = await Message.create(messageForDB);
 
-  emitEvent(req, NEW_ATTACHMENTS, chat.members, {
+  emitEvent(req, NEW_MESSAGE, chat.members, {
     message: messageForRealTime,
     chatId,
   });

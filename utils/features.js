@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import cloudinary from "cloudinary";
 import { v4 as uuid } from "uuid";
-import { getBase64 } from "../lib/chat.js";
+import { getBase64, getSockets } from "../lib/chat.js";
 
 export const cookieOptions = {
   maxAge: 15 * 24 * 60 * 60 * 1000,
@@ -31,7 +31,9 @@ export const sendToken = (res, user, code, message) => {
 };
 
 export const emitEvent = (req, event, users, data) => {
-  console.log("Emitting event", event);
+  const io = req.app.get("io");
+  const otherUsers = getSockets(users);
+  io.to(otherUsers).emit(event, data);
 };
 
 export const uploadToCloudinary = async (files = []) => {
