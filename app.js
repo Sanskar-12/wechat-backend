@@ -95,7 +95,7 @@ io.on("connection", (socket) => {
       message: messageForRealTime,
     });
 
-    io.to(members).emit(NEW_MESSAGE_ALERT, {
+    io.to(membersSocket).emit(NEW_MESSAGE_ALERT, {
       chatId,
     });
 
