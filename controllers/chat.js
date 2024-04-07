@@ -156,8 +156,12 @@ export const removeMember = TryCatch(async (req, res, next) => {
     return next(new ErrorHandler("This is not a Group Chat", 400));
   }
 
+  if (chat.members.length <= 3) {
+    return next(new ErrorHandler("Group must have at least 3 members", 400));
+  }
+
   if (chat.creator.toString() !== req.user.toString()) {
-    return next(new ErrorHandler("You are not allowed to Add members", 400));
+    return next(new ErrorHandler("You are not allowed to Remove members", 400));
   }
 
   chat.members = chat.members.filter(
