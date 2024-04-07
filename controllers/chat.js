@@ -164,6 +164,8 @@ export const removeMember = TryCatch(async (req, res, next) => {
     return next(new ErrorHandler("You are not allowed to Remove members", 400));
   }
 
+  const allChatMembers = chat.members.map((member) => member.toString());
+
   chat.members = chat.members.filter(
     (member) => member.toString() !== userId.toString()
   );
@@ -177,7 +179,7 @@ export const removeMember = TryCatch(async (req, res, next) => {
     `${userThatWillBeRemoved.name} has been removed from the group`
   );
 
-  emitEvent(req, REFETCH_CHATS, chat.members);
+  emitEvent(req, REFETCH_CHATS, allChatMembers);
 
   return res.status(200).json({
     success: true,
@@ -414,6 +416,17 @@ export const getMessages = TryCatch(async (req, res, next) => {
 
   const limit = 20;
   const skip = (page - 1) * limit;
+
+  const chat = await Chat.findById(chatId);
+  if (!chat) {
+    return next(new ErrorHandler("Chat not found", 400));
+  }
+
+  if (!chat.members.includes(req.user.toString())) {
+    return next(
+      new ErrorHandler("You are not allowed to access this chat", 400)
+    );
+  }
 
   const [messages, count] = await Promise.all([
     Message.find({ chat: chatId })
