@@ -125,12 +125,10 @@ export const addMembers = TryCatch(async (req, res, next) => {
 
   const allUsersName = allMembers.map((i) => i.name).join(",");
 
-  emitEvent(
-    req,
-    ALERT,
-    chat.members,
-    `${allUsersName} has been added to the group`
-  );
+  emitEvent(req, ALERT, chat.members, {
+    message: `${allUsersName} has been added to the group`,
+    chatId,
+  });
 
   emitEvent(req, REFETCH_CHATS, chat.members);
 
@@ -172,12 +170,10 @@ export const removeMember = TryCatch(async (req, res, next) => {
 
   await chat.save();
 
-  emitEvent(
-    req,
-    ALERT,
-    chat.members,
-    `${userThatWillBeRemoved.name} has been removed from the group`
-  );
+  emitEvent(req, ALERT, chat.members, {
+    message: `${userThatWillBeRemoved.name} has been removed from the group`,
+    chatId,
+  });
 
   emitEvent(req, REFETCH_CHATS, allChatMembers);
 
@@ -222,7 +218,10 @@ export const leaveMember = TryCatch(async (req, res, next) => {
     chat.save(),
   ]);
 
-  emitEvent(req, ALERT, chat.members, `User ${user.name} has left the group`);
+  emitEvent(req, ALERT, chat.members, {
+    message: `User ${user.name} has left the group`,
+    chatId,
+  });
 
   return res.status(200).json({
     success: true,
@@ -347,12 +346,10 @@ export const renameGroup = TryCatch(async (req, res, next) => {
 
   await chat.save();
 
-  emitEvent(
-    req,
-    ALERT,
-    chat.members,
-    `Group name has been renamed to ${chat.name}`
-  );
+  emitEvent(req, ALERT, chat.members, {
+    message: `Group name has been renamed to ${chat.name}`,
+    chatId,
+  });
 
   emitEvent(req, REFETCH_CHATS, chat.members);
 

@@ -27,6 +27,7 @@ export const sendToken = (res, user, code, message) => {
   res.status(code).cookie("wechat-token", token, cookieOptions).json({
     success: true,
     message,
+    user,
   });
 };
 
