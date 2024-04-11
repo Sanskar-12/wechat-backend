@@ -9,8 +9,11 @@ import cookieParser from "cookie-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import {
+  CHAT_JOINED,
+  CHAT_LEAVED,
   NEW_MESSAGE,
   NEW_MESSAGE_ALERT,
+  ONLINE_USERS,
   START_TYPING,
   STOP_TYPING,
 } from "./constants/events.js";
@@ -43,6 +46,7 @@ const io = new Server(server, {
   cors: corsOptions,
 });
 export const userSocketIDs = new Map();
+const onlineUsers = new Set();
 
 app.set("io", io);
 
@@ -123,8 +127,26 @@ io.on("connection", (socket) => {
     socket.to(membersSocket).emit(STOP_TYPING, { chatId });
   });
 
+  socket.on(CHAT_JOINED, ({ userId, members }) => {
+    onlineUsers.add(userId.toString());
+
+    const memberSocket = getSockets(members);
+
+    io.to(memberSocket).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
+  socket.on(CHAT_LEAVED, ({ userId, members }) => {
+    onlineUsers.delete(userId.toString());
+
+    const memberSocket = getSockets(members);
+
+    io.to(memberSocket).emit(ONLINE_USERS, Array.from(onlineUsers));
+  });
+
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    userSocketIDs.delete(sender._id.toString());
+    onlineUsers.delete(sender._id.toString());
+    socket.broadcast.emit(ONLINE_USERS, Array.from(onlineUsers));
   });
 });
 
